@@ -1,0 +1,540 @@
+---
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "HCNetSDK Server"
+  termsOfService: ""
+basePath: "/v1"
+tags:
+- name: "Login"
+  description: "About the device login"
+- name: "User"
+  description: "Device User Information Management"
+- name: "Log"
+  description: "About device logs"
+schemes:
+- "http"
+- "https"
+paths:
+  /Login:
+    post:
+      tags:
+      - "Login"
+      summary: "Login Controler"
+      description: "Try to login to the controller, such as successful landing, return\
+        \ to the landing handle, all other operations need to use this device handle."
+      operationId: "login"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "loginData"
+        description: "Device Login Information"
+        required: true
+        schema:
+          $ref: "#/definitions/LoginInfo"
+      responses:
+        200:
+          description: "Administrator Login Successful. Return Action Handle."
+          schema:
+            type: "string"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+              default: "*"
+        400:
+          description: "Administrator Logon failed. Return Failure reason Description."
+          schema:
+            type: "string"
+        405:
+          description: "Invalid input"
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.login_controller"
+  /User:
+    get:
+      tags:
+      - "User"
+      summary: "Getting user information from the controller"
+      description: ""
+      operationId: "get_user"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "actionHandle"
+        in: "query"
+        description: "Login Successful Return Action Handle."
+        required: true
+        type: "string"
+      - name: "CardNos"
+        in: "query"
+        description: "Card Number"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      - name: "userCodes"
+        in: "query"
+        description: "User Number(Employee number)"
+        required: false
+        type: "array"
+        items:
+          type: "integer"
+          format: "int32"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "Successful access to user information. Return user information"
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          description: "User Information couldn't have been modified. Returns a detailed\
+            \ description of the error."
+          schema:
+            type: "string"
+        405:
+          description: "Invalid input. Returns a detailed description of the error."
+          schema:
+            type: "string"
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.user_controller"
+    post:
+      tags:
+      - "User"
+      summary: "Add a new User to Controler"
+      description: "Add a new user, add by card number (default to use first card)"
+      operationId: "add_user"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "actionHandle"
+        in: "query"
+        description: "Login Successful Return Action Handle."
+        required: true
+        type: "string"
+      - in: "body"
+        name: "userData"
+        description: "User Information"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "User succesfully created."
+        400:
+          description: "User couldn't have been created. Returns a detailed description\
+            \ of the error"
+          schema:
+            type: "string"
+        405:
+          description: "Invalid input. Returns a detailed description of the error."
+          schema:
+            type: "string"
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.user_controller"
+    put:
+      tags:
+      - "User"
+      summary: "Modifying user information in a controller"
+      description: ""
+      operationId: "modify_user"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "actionHandle"
+        in: "query"
+        description: "Login Successful Return Action Handle."
+        required: true
+        type: "string"
+      - in: "body"
+        name: "userData"
+        description: "User Information"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "User Information successfully modified."
+        400:
+          description: "User information has not been completely modified. Returns\
+            \ a detailed description of the error."
+          schema:
+            type: "string"
+        405:
+          description: "Invalid input. Returns a detailed description of the error."
+          schema:
+            type: "string"
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.user_controller"
+    delete:
+      tags:
+      - "User"
+      summary: "Delete user information from the controller"
+      description: "Search for the user in the device by card number or user number,\
+        \ and obtain the user's detailed information. The card number will be used\
+        \ as a priority when providing the card number."
+      operationId: "delete_user"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "actionHandle"
+        in: "query"
+        description: "Login Successful Return Action Handle."
+        required: true
+        type: "string"
+      - name: "CardNos"
+        in: "query"
+        description: "Card Number"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      - name: "userCodes"
+        in: "query"
+        description: "User Number(Employee number)"
+        required: false
+        type: "array"
+        items:
+          type: "integer"
+          format: "int32"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "User successfully deleted. Return User Number deleted"
+          schema:
+            type: "integer"
+            format: "int32"
+        400:
+          description: "User deletion failed. Returns a detailed description of the\
+            \ error."
+          schema:
+            type: "string"
+        405:
+          description: "Invalid input. Returns a detailed description of the error."
+          schema:
+            type: "string"
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.user_controller"
+  /Log:
+    get:
+      tags:
+      - "Log"
+      summary: "Read logs from the controller"
+      description: "Query the device log with the time period, event type, and event\
+        \ sequence number to return the corresponding log information."
+      operationId: "get_log"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "actionHandle"
+        in: "query"
+        description: "Login Successful Return Action Handle."
+        required: true
+        type: "string"
+      - name: "StartTime"
+        in: "query"
+        description: "Start time"
+        required: true
+        type: "string"
+        format: "date-time"
+      - name: "EndTime"
+        in: "query"
+        description: "End Time"
+        required: true
+        type: "string"
+        format: "date-time"
+      - name: "Major"
+        in: "query"
+        description: "Event main Type"
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "Minor"
+        in: "query"
+        description: "Event Secondary Type"
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "BeginSerialNo"
+        in: "query"
+        description: "Start serial number"
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "EndSerialNo"
+        in: "query"
+        description: "End serial number"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Successfully read the log in the controller. Return logs."
+          schema:
+            type: "array"
+            items:
+              type: "string"
+        400:
+          description: "Failed to read log in controller. Returns a detailed description\
+            \ of the error."
+          schema:
+            type: "string"
+        405:
+          description: "Invalid input. Returns a detailed description of the error."
+          schema:
+            type: "string"
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.log_controller"
+definitions:
+  LoginInfo:
+    type: "object"
+    properties:
+      deviceAddress:
+        type: "string"
+        description: "IP"
+      userName:
+        type: "string"
+      password:
+        type: "string"
+      port:
+        type: "integer"
+        format: "int32"
+        default: 8000
+    example:
+      deviceAddress: "10.108.52.14"
+      userName: "admin"
+      password: "a1234567"
+      port: 8000
+  Face:
+    type: "object"
+    properties:
+      index:
+        type: "integer"
+        format: "int32"
+        description: "User Face index"
+        default: 1
+      data:
+        type: "string"
+        format: "byte"
+        description: "User Face Data(Base64)"
+        pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+        x-regex: "^(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=)?$"
+        x-modifiers: []
+      valid:
+        type: "boolean"
+        description: ""
+        default: true
+    example:
+      valid: true
+      data: "data"
+      index: 2
+    xml:
+      name: "Face"
+  Finger:
+    type: "object"
+    properties:
+      index:
+        type: "integer"
+        format: "int32"
+        description: "User Finger index"
+        default: 1
+      data:
+        type: "string"
+        format: "byte"
+        description: "User Finger Data(Base64)"
+        pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+        x-regex: "^(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=)?$"
+        x-modifiers: []
+      valid:
+        type: "boolean"
+        description: ""
+        default: true
+    example:
+      valid: true
+      data: "data"
+      index: 5
+    xml:
+      name: "Finger"
+  Card:
+    type: "object"
+    properties:
+      index:
+        type: "integer"
+        format: "int32"
+        description: "User Card index"
+        default: 1
+      cardNo:
+        type: "string"
+      cardPassword:
+        type: "string"
+        default: ""
+      cardType:
+        type: "integer"
+        format: "int32"
+        description: "卡类型：1- 普通卡（默认），2- 残疾人卡，3- 黑名单卡，4- 巡更卡，5- 胁迫卡，6- 超级卡，7- 来宾卡，\
+          8- 解除卡，9- 员工卡，10- 应急卡，11- 应急管理卡"
+        default: 1
+      valid:
+        type: "boolean"
+        description: ""
+        default: true
+    example:
+      valid: true
+      cardPassword: "cardPassword"
+      cardType: 5
+      index: 1
+      cardNo: "cardNo"
+    xml:
+      name: "Card"
+  ValidTime:
+    type: "object"
+    properties:
+      beginTime:
+        type: "string"
+        format: "date-time"
+      endTime:
+        type: "string"
+        format: "date-time"
+      valid:
+        type: "boolean"
+        description: ""
+        default: true
+    example:
+      valid: true
+      beginTime: "2000-01-23T04:56:07.000+00:00"
+      endTime: "2000-01-23T04:56:07.000+00:00"
+    xml:
+      name: "ValidTime"
+  Authorize:
+    type: "object"
+    properties:
+      doorRight:
+        type: "array"
+        items:
+          type: "integer"
+          format: "int32"
+        maxItems: 4
+        minItems: 0
+      RightPlan:
+        type: "array"
+        items:
+          type: "integer"
+          format: "int32"
+        maxItems: 8
+        minItems: 0
+      validTime:
+        $ref: "#/definitions/ValidTime"
+    example:
+      doorRight:
+      - 0
+      - 0
+      - 0
+      - 0
+      validTime:
+        valid: true
+        beginTime: "2000-01-23T04:56:07.000+00:00"
+        endTime: "2000-01-23T04:56:07.000+00:00"
+      RightPlan:
+      - 6
+      - 6
+      - 6
+      - 6
+      - 6
+      - 6
+      - 6
+      - 6
+    xml:
+      name: "Authorize"
+  User:
+    type: "object"
+    properties:
+      code:
+        type: "string"
+      name:
+        type: "string"
+      valid:
+        type: "boolean"
+        description: ""
+        default: true
+      authorize:
+        $ref: "#/definitions/Authorize"
+      cards:
+        type: "array"
+        items:
+          $ref: "#/definitions/Card"
+        maxItems: 2
+        minItems: 1
+      Fingers:
+        type: "array"
+        items:
+          $ref: "#/definitions/Finger"
+        maxItems: 10
+        minItems: 0
+      Faces:
+        type: "array"
+        items:
+          $ref: "#/definitions/Face"
+        maxItems: 2
+        minItems: 0
+    example:
+      valid: true
+      code: "900001"
+      cards:
+      - valid: true
+        cardPassword: ""
+        cardType: 1
+        index: 1
+        cardNo: "9990000001"
+      Fingers:
+      - valid: true
+        data: "data"
+        index: 5
+      name: "name"
+      authorize:
+        doorRight:
+        - 1
+        validTime:
+          valid: true
+          beginTime: "2000-01-23T04:56:07.000+00:00"
+          endTime: "2000-01-23T04:56:07.000+00:00"
+        RightPlan:
+        - 1
+      Faces:
+      - valid: true
+        data: "data"
+        index: 1
+    xml:
+      name: "User"
+  Error:
+    type: "object"
+    properties:
+      code:
+        type: "string"
+      message:
+        type: "string"

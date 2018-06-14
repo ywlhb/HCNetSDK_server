@@ -1,0 +1,435 @@
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "HCNetSDK Server"
+  termsOfService: ""
+basePath: "/v1"
+tags:
+- name: "Login"
+  description: "About the device login"
+- name: "User"
+  description: "Device User Information Management"
+- name: "Log"
+  description: "About device logs"
+schemes:
+- "http"
+paths:
+  /Login:
+    post:
+      tags:
+      - "Login"
+      summary: "Login Controler"
+      description: "Try to login to the controller, such as successful landing, return to the landing handle, all other operations need to use this device handle."
+      operationId: "login"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "loginData"
+        description: "Device Login Information"
+        required: true
+        schema:
+          $ref: "#/definitions/LoginInfo"
+      responses:
+        200:
+          description: "Administrator Login Successful. Return Action Handle."
+          schema:
+            type: "string"
+        400:
+          description: "Administrator Logon failed. Return Failure reason Description."
+          schema:
+            type: "string"
+        405:
+          description: "Invalid input"
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+  /User:
+    post:
+      tags:
+      - "User"
+      summary: "Add a new User to Controler"
+      description: "Add a new user, add by card number (default to use first card)"
+      operationId: "addUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "actionHandle"
+        description: "Login Successful Return Action Handle."
+        type: "string"
+        required: true
+      - in: "body"
+        name: "userData"
+        description: "User Information"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "User succesfully created."
+        400:
+          description: "User couldn't have been created. Returns a detailed description of the error"
+          schema:
+            type: "string"
+        405:
+          description: "Invalid input. Returns a detailed description of the error."
+          schema:
+            type: "string"  
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+    put:
+      tags:
+      - "User"
+      summary: "Modifying user information in a controller"
+      description: ""
+      operationId: "modifyUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "actionHandle"
+        description: "Login Successful Return Action Handle."
+        type: "string"
+        required: true
+      - in: "body"
+        name: "userData"
+        description: "User Information"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "User Information successfully modified."
+        400:
+          description: "User information has not been completely modified. Returns a detailed description of the error."
+          schema:
+            type: "string"  
+        405:
+          description: "Invalid input. Returns a detailed description of the error."
+          schema:
+            type: "string"  
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+    get:
+      tags:
+      - "User"
+      summary: "Getting user information from the controller"
+      description: ""
+      operationId: "getUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "actionHandle"
+        description: "Login Successful Return Action Handle."
+        type: "string"
+        required: true
+      - in: "query"
+        name: "CardNos"
+        description: "Card Number"
+        type: "array"
+        items:
+          type: "string"
+      - in: "query"
+        name: "userCodes"
+        description: "User Number(Employee number)"
+        type: "array"
+        items:
+          type: "integer"
+          format: "int32"
+      responses:
+        200:
+          description: "Successful access to user information. Return user information"
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          description: "User Information couldn't have been modified. Returns a detailed description of the error."
+          schema:
+            type: "string"  
+        405:
+          description: "Invalid input. Returns a detailed description of the error."
+          schema:
+            type: "string"  
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      tags:
+      - "User"
+      summary: "Delete user information from the controller"
+      description: "Search for the user in the device by card number or user number, and obtain the user's detailed information. The card number will be used as a priority when providing the card number."
+      operationId: "deleteUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "actionHandle"
+        description: "Login Successful Return Action Handle."
+        type: "string"
+        required: true
+      - in: "query"
+        name: "CardNos"
+        description: "Card Number"
+        type: "array"
+        items:
+          type: "string"
+      - in: "query"
+        name: "userCodes"
+        description: "User Number(Employee number)"
+        type: "array"
+        items:
+          type: "integer"
+          format: "int32"
+      responses:
+        200:
+          description: "User successfully deleted. Return User Number deleted"
+          schema:
+            type: "integer"
+            format: "int32"
+        400:
+          description: "User deletion failed. Returns a detailed description of the error."
+          schema:
+            type: "string"
+        405:
+          description: "Invalid input. Returns a detailed description of the error."
+          schema:
+            type: "string"
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+  /Log:
+    get:
+      tags:
+      - "Log"
+      summary: "Read logs from the controller"
+      description: "Query the device log with the time period, event type, and event sequence number to return the corresponding log information."
+      operationId: "getLog"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "actionHandle"
+        description: "Login Successful Return Action Handle."
+        type: "string"
+        required: true
+      - in: "query"
+        name: "StartTime"
+        description: "Start time"
+        type: "string"
+        format: "date-time"
+        required: true
+      - in: "query"
+        name: "EndTime"
+        description: "End Time"
+        type: "string"
+        format: "date-time"
+        required: true
+      - in: "query"
+        name: "Major"
+        description: "Event main Type"
+        type: "integer"
+        format: "int32"
+      - in: "query"
+        name: "Minor"
+        description: "Event Secondary Type"
+        type: "array"
+        items:
+          type: "integer"
+          format: "int32"
+      - in: "query"
+        name: "BeginSerialNo"
+        description: "Start serial number"
+        type: "integer"
+        format: "int32"
+      - in: "query"
+        name: "End Serial Number"
+        description: ""
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Successfully read the log in the controller. Return logs."
+          schema:
+            type: "array"
+            items: 
+              type: "string"
+        400:
+          description: "Failed to read log in controller. Returns a detailed description of the error."
+          schema:
+            type: "string"
+        405:
+          description: "Invalid input. Returns a detailed description of the error."
+          schema:
+            type: "string"
+        500:
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+definitions:
+  LoginInfo:
+    type: "object"
+    properties:
+      deviceAddress:
+        type: "string"
+        description: "IP"
+      userName:
+        type: "string"
+      password:
+        type: "string"
+      port:
+        type: "integer"
+        format: "int32"
+        default: 8000
+  Face:
+    type: "object"
+    properties:
+      index:
+        type: "integer"
+        format: "int32"
+        description: "User Face index"
+        default: 1
+      data:
+        type: "string"
+        format: "byte"
+        description: "User Face Data"
+      valid:
+        type: "boolean"
+        default: true
+        description: ""
+    xml:
+      name: "Face"
+  Finger:
+    type: "object"
+    properties:
+      index:
+        type: "integer"
+        format: "int32"
+        description: "User Finger index"
+        default: 1
+      data:
+        type: "string"
+        format: "byte"
+        description: "User Finger Data"
+      valid:
+        type: "boolean"
+        default: true
+        description: ""
+    xml:
+      name: "Finger"
+  Card:
+    type: "object"
+    properties:
+      index:
+        type: "integer"
+        format: "int32"
+        description: "User Card index"
+        default: 1
+      cardNo:
+        type: "string"
+      cardPassword:
+        type: "string"
+        default: ""
+      cardType:
+        type: "integer"
+        format: "int32"
+        description: "卡类型：1- 普通卡（默认），2- 残疾人卡，3- 黑名单卡，4- 巡更卡，5- 胁迫卡，6- 超级卡，7- 来宾卡，8- 解除卡，9- 员工卡，10- 应急卡，11- 应急管理卡"
+        default: 1
+      valid:
+        type: "boolean"
+        default: true
+        description: ""
+    xml:
+      name: "Card"
+  ValidTime:
+    type: "object"
+    properties:
+      beginTime:
+        type: "string"
+        format: "date-time"
+      endTime:
+        type: "string"
+        format: "date-time"
+      valid:
+        type: "boolean"
+        default: true
+        description: ""  
+    xml:
+      name: "ValidTime"
+  Authorize:
+    type: "object"
+    properties:
+      doorRight:
+        type: "array"
+        minItems: 0
+        maxItems: 4
+        items:
+          type: "integer"
+          format: "int32"
+        default: [1]  
+      RightPlan:
+        type: "array"
+        minItems: 0
+        maxItems: 8
+        items:
+          type: "integer"
+          format: "int32"
+        default: [1,1] 
+      validTime:
+        $ref: "#/definitions/ValidTime"
+    xml:
+      name: "Authorize"
+  User:
+    type: "object"
+    properties:
+      code:
+        type: "string"
+      name:
+        type: "string"
+      valid:
+        type: "boolean"
+        default: true
+        description: ""
+      authorize:
+        $ref: "#/definitions/Authorize"
+      cards:
+        type: "array"
+        minItems: 1
+        maxItems: 2
+        items:
+          $ref: "#/definitions/Card"
+      Fingers:
+        type: "array"
+        minItems: 0
+        maxItems: 10
+        items:
+          $ref: "#/definitions/Finger"
+      Faces:
+        type: "array"
+        minItems: 0
+        maxItems: 2
+        items:
+          $ref: "#/definitions/Face"
+    xml:
+      name: "User"
+  Error:
+    type: "object"
+    properties:
+      code:
+        type: string
+      message:
+        type: string
