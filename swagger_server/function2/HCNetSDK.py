@@ -2,13 +2,17 @@ import sys
 import os
 from enum import Enum, unique
 from ctypes import *
+import platform
 
 
 #print(os.getcwd() +  '/swagger_server/linux_dll')
-#os.environ['path'] += os.getcwd() + '\\swagger_server\\dll;'
-#dll = windll.LoadLibrary('..\\dll\\HCNetSDK.dll')
-#sys.path.append(os.getcwd() + '/swagger_server/linux_dll')
-dll = CDLL(os.getcwd() +  '/swagger_server/linux_dll/libhcnetsdk.so')
+sysstr = platform.system()
+print(sysstr)
+if sysstr =="Windows" :
+    os.environ['path'] += os.getcwd() + '\\swagger_server\\dll;'
+    dll = windll.LoadLibrary('..\\dll\\HCNetSDK.dll')
+else:
+    dll = CDLL(os.getcwd() +  '/swagger_server/linux_dll/libhcnetsdk.so')
 
 NET_DVR_DEV_ADDRESS_MAX_LEN = 129  # device address max length
 NET_DVR_LOGIN_USERNAME_MAX_LEN = 64
