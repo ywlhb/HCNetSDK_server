@@ -1,16 +1,16 @@
-FROM python:3-alpine
+FROM tiangolo/uwsgi-nginx:python3.6-alpine3.7
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY requirements.txt /usr/src/app/
+COPY . /app
 
-RUN pip3 install --no-cache-dir -r requirements.txt
+COPY hcnetsdksvr.conf /etc/nginx/conf.d/
 
-COPY . /usr/src/app
+RUN apk update && apk add \
+    libuuid \
+    libstdc++ \
+    && pip3 install --no-cache-dir -r requirements.txt
 
-EXPOSE 8080
+ENV LISTEN_PORT 8085
 
-ENTRYPOINT ["python3"]
-
-CMD ["-m", "swagger_server"]
+EXPOSE 8085 9085
