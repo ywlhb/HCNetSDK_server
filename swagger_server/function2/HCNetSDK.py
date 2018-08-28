@@ -5,7 +5,7 @@ from ctypes import *
 import platform
 
 
-#print(os.getcwd() +  '/swagger_server/linux_dll')
+print(os.getcwd() +  '/swagger_server/linux_dll')
 sysstr = platform.system()
 print(sysstr)
 if sysstr =="Windows" :
