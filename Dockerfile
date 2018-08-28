@@ -5,6 +5,7 @@ WORKDIR /app
 COPY . /app
 
 COPY hcnetsdksvr.conf /etc/nginx/conf.d/
+COPY ldconfig.conf /etc/ld.so.conf.d/
 
 RUN apk update && apk add \
     libuuid \
