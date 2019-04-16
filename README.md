@@ -42,8 +42,14 @@ To run the server on a Docker container, please execute the following from the r
 
 ```bash
 # building the image
-docker build -t hcnetsdksvr:uwsgi-nginx-alpine .
+docker build -t ywlhb/hcnetsdksvr:uwsgi-nginx-alpine .
+
+# push the image
+docker push ywlhb/hcnetsdksvr:uwsgi-nginx-alpine
+
+# pull the image
+docker pull ywlhb/hcnetsdksvr:uwsgi-nginx-alpine
 
 # starting up a container
-docker run -p 8085:8085 -p 9085:9085 hcnetsdksvr:uwsgi-nginx-alpine
+docker run -p 8085:8085 -p 9085:9085 ywlhb/hcnetsdksvr:uwsgi-nginx-alpine
 ```
